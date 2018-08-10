@@ -23,7 +23,7 @@ Recipe recipe;
         bundle.putSerializable("recipe",recipe);
         recipeStepsFragment.setArguments(bundle);
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.tabletStepsListContainer,recipeStepsFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.tabletStepsListContainer,recipeStepsFragment).commit();
 
     }
 }
