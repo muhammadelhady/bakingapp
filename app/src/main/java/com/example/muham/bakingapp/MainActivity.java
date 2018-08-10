@@ -46,12 +46,7 @@ Toast toast;
 
     private void DetrmineDeviceScreenSize()
     {
-        DisplayMetrics metrics = new DisplayMetrics();
-        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        float yInches= metrics.heightPixels/metrics.ydpi;
-        float xInches= metrics.widthPixels/metrics.xdpi;
-        double diagonalInches = Math.sqrt(xInches*xInches + yInches*yInches);
+        double diagonalInches =GetDiagonalInches();
         if (diagonalInches>=6.5){
             //tablet Size
             recyclerView.setLayoutManager(new GridLayoutManager(this,3));
@@ -85,11 +80,35 @@ Toast toast;
 
     @Override
     public void onListItemClicked(int clickedItemIndex) {
-        Intent intent =new Intent(this,RecipeStepsListActivity.class);
+
+
+
+        double diagonalInches =GetDiagonalInches();
         Recipe recipe = recipes.get(clickedItemIndex);
-intent.putExtra("recipe",recipe);
+        Intent intent;
+        if (diagonalInches>=6.5){
+            //tablet Size
+             intent =  new Intent(this,TabletActivity.class);
+        }else{
+            // smaller device
+             intent =new Intent(this,RecipeStepsListActivity.class);
+        }
+
+        intent.putExtra("recipe",recipe);
         startActivity(intent);
+
+
     }
+   public  Double GetDiagonalInches()
+   {
+       DisplayMetrics metrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+       float yInches= metrics.heightPixels/metrics.ydpi;
+       float xInches= metrics.widthPixels/metrics.xdpi;
+       return  Math.sqrt(xInches*xInches + yInches*yInches);
+
+   }
 
 
     class conection extends AsyncTask<String,String,String>

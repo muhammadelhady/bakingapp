@@ -7,40 +7,9 @@
     android:orientation="vertical"
     tools:context=".StepActivity">
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-        android:id="@+id/simpleExoPlayer"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="match_parent"></com.google.android.exoplayer2.ui.SimpleExoPlayerView>
-
-    <TextView
-        android:layout_margin="30dp"
-        android:id="@+id/stepdescriptionTextView"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:textSize="24sp"
-        android:layout_height="match_parent" />
-
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:layout_margin="30dp"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/previousButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Previous"
-          />
-        <Button
-            android:id="@+id/nextButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Next"
-          />
-    </LinearLayout>
+<FrameLayout
+    android:id="@+id/steps_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"></FrameLayout>
 
 </LinearLayout>

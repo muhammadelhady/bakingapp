@@ -1,5 +1,6 @@
 package com.example.muham.bakingapp;
 
+import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
@@ -33,142 +34,34 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 
 public class StepActivity extends AppCompatActivity {
 
-    SimpleExoPlayer player;
-    SimpleExoPlayerView simpleExoPlayerView;
-    ArrayList<Step>steps;
-    int position;
-    TextView stepDescriptionTextView;
-    Button Next,Previous;
+ArrayList<Step>steps;
+int position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
 
-        stepDescriptionTextView=(TextView)findViewById(R.id.stepdescriptionTextView);
-        simpleExoPlayerView = findViewById(R.id.simpleExoPlayer);
+        getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        Next= (Button)findViewById(R.id.nextButton);
-        Previous=(Button)findViewById(R.id.previousButton);
-
 steps=(ArrayList<Step>)getIntent().getSerializableExtra("steps");
 position=getIntent().getIntExtra("position",0);
-PreparVideo();
-Buttons();
-        checkOrientaion();
-    }
-    void PreparVideo()
-    {
-       simpleExoPlayerView.setVisibility(View.VISIBLE);
-        if(!steps.get(position).getVideoURL().equals(""))
-        {
-            IntializePlayer(Uri.parse(steps.get(position).getVideoURL()));
-        }
-        else if(!steps.get(position).getThumbnailURL().equals("")) {
-            IntializePlayer(Uri.parse(steps.get(position).getThumbnailURL()));
-        }
-        else {
-simpleExoPlayerView.setVisibility(View.GONE);
-stepDescriptionTextView.setText(steps.get(position).getDescription());
-        }
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("steps",steps);
+        bundle.putInt("position",position);
+        StepFragment stepFragment =new StepFragment();
+        stepFragment.setArguments(bundle);
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().add(R.id.steps_container,stepFragment).commit();
+
+
 
     }
 
-    public  void IntializePlayer(Uri uri)
-    {
-
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(videoTrackSelectionFactory);
-
-           player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
-
-
-
-        simpleExoPlayerView.setPlayer(player);
-
-           DataSource.Factory dataSourceFactory =
-                new DefaultDataSourceFactory(this, Util.getUserAgent(this, "BakingApp"));
-
-           ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-
-
-        MediaSource videoSource = new ExtractorMediaSource(uri,
-                dataSourceFactory, extractorsFactory, null, null);
-        player.prepare(videoSource);
-        player.setPlayWhenReady(true);
-        stepDescriptionTextView.setText(steps.get(position).getDescription());
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ReleaseVideoResources();
-    }
-
-
-
-    void Buttons( )
-    {
-        Next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (++position<steps.size())
-                {
-                    ReleaseVideoResources();
-                    PreparVideo();
-                }
-                else {
-                    position--;
-                    Toast.makeText(StepActivity.this,"this is The Last Step",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-        Previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (--position>=0)
-                {
-                    ReleaseVideoResources();
-                    PreparVideo();
-                }
-                else {
-                    position=0;
-                    Toast.makeText(StepActivity.this,"this is The first Step",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
-    }
-
-
-
-    void ReleaseVideoResources()
-    {
-        if (player!=null)
-        {
-            player.stop();
-            player.release();
-        }
-
-    }
-
-    void checkOrientaion()
-    {
-        if (getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE)
-        {
-            stepDescriptionTextView.setVisibility(View.GONE);
-            findViewById(R.id.buttonsLayout).setVisibility(View.GONE);
-            getSupportActionBar().hide();
-
-        }
-    }
 
 }
