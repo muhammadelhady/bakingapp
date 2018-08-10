@@ -22,6 +22,7 @@ public class RecipeStepsFragment extends Fragment implements RecipesStepsListGre
     RecipesStepsListGreenAdapter adapter;
     Button showIngredientsButton;
     Recipe recipe;
+    FragmentManager fragmentManager;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,8 +80,9 @@ Bundle bundle= getArguments();
             bundle.putInt("position",clickedItemIndex);
             StepFragment stepFragment = new StepFragment();
             stepFragment.setArguments(bundle);
-            FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction().add(R.id.tabletStepContainer,stepFragment
+             fragmentManager=getActivity().getSupportFragmentManager();
+
+            fragmentManager.beginTransaction().replace(R.id.tabletStepContainer,stepFragment
             ).commit();
 
 
