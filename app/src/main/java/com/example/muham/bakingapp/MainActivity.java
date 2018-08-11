@@ -35,7 +35,12 @@ Toast toast;
 
 
     }
-
+    public void UpdateWidget ()
+    {
+        Intent intent = new Intent("com.example.muham.bakingapp.RICEPE_CHANGED");
+        intent.putExtra("recipe",recipes.get(0));
+        getApplicationContext().sendBroadcast(intent);
+    }
     private void ConfigRecyclerView()
     {
         greenAdapter=new GreenAdapter(recipes,this);
@@ -133,6 +138,7 @@ Toast toast;
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
       ConfigRecyclerView();
+         UpdateWidget();
 
         }
 

@@ -22,7 +22,18 @@
         <activity android:name=".RecipeStepsListActivity" />
         <activity android:name=".IngredientsActivity" />
         <activity android:name=".StepActivity" />
-        <activity android:name=".TabletActivity"></activity>
+        <activity android:name=".TabletActivity" />
+
+        <receiver android:name=".GradieantsWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.muham.bakingapp.RICEPE_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/gradieants_widget_info" />
+        </receiver>
     </application>
 
 </manifest>

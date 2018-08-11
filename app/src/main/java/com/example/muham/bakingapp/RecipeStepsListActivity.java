@@ -1,6 +1,8 @@
 package com.example.muham.bakingapp;
 
 import android.app.FragmentManager;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
@@ -36,10 +38,32 @@ public class RecipeStepsListActivity extends AppCompatActivity  {
 
 Bundle bundle = new Bundle();
 bundle.putSerializable("recipe",recipe);
+UpdateWidget();
 recipeStepsFragment.setArguments(bundle);
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.containerr,recipeStepsFragment).commit();
     }
 
 
+
+
+    public void UpdateWidget ()
+    {
+       Intent intent = new Intent("com.example.muham.bakingapp.RICEPE_CHANGED");
+        intent.putExtra("recipe",recipe);
+        getApplicationContext().sendBroadcast(intent);
+        UpdateWidget2();
+    }
+
+    void UpdateWidget2()
+    {
+        Intent intent = new Intent(this, GradieantsWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+// Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+// since it seems the onUpdate() is only fired on that:
+        int[] ids = AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new ComponentName(getApplication(), GradieantsWidget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
+    }
 }
