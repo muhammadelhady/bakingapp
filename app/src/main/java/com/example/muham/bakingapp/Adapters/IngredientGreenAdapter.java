@@ -14,6 +14,8 @@ import com.example.muham.bakingapp.RecipeObject.Recipe;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+
 public class IngredientGreenAdapter extends RecyclerView.Adapter<IngredientGreenAdapter.IngredientsViewHolder> {
 
 ArrayList<Ingredients> ingredients=new ArrayList<>();

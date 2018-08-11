@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -23,12 +26,21 @@ import java.io.Serializable;
 public class RecipeStepsListActivity extends AppCompatActivity  {
 
     Recipe recipe;
-    RecipeStepsFragment recipeStepsFragment;
+    Fragment recipeStepsFragment;
     android.support.v4.app.FragmentManager fragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
+
         setContentView(R.layout.activity_recipe_steps_list);
+
+
+
+
         Intent intent =getIntent();
          recipe = (Recipe)intent.getSerializableExtra("recipe");
 
@@ -40,11 +52,22 @@ Bundle bundle = new Bundle();
 bundle.putSerializable("recipe",recipe);
 UpdateWidget();
 recipeStepsFragment.setArguments(bundle);
+        if (savedInstanceState != null) {
+            //Restore the fragment's instance
+            recipeStepsFragment = getSupportFragmentManager().getFragment(savedInstanceState, "myFragmentName");
+
+        }
         fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.containerr,recipeStepsFragment).commit();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
+        //Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, "myFragmentName", recipeStepsFragment);
+    }
 
 
     public void UpdateWidget ()
@@ -65,5 +88,19 @@ recipeStepsFragment.setArguments(bundle);
                 .getAppWidgetIds(new ComponentName(getApplication(), GradieantsWidget.class));
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(intent);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+      finish();
+
+        return true;
     }
 }

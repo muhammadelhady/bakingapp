@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -42,10 +44,14 @@ public class StepFragment extends Fragment {
     int position;
     TextView stepDescriptionTextView;
     Button Next,Previous;
+    ImageView imageView;
+    Long playerPosition= Long.valueOf(0);
+    boolean readyState=true;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
 
         View rootView=inflater.inflate(R.layout.step_fragment,container,false);;
         Bundle bundle=getArguments();
@@ -53,13 +59,20 @@ public class StepFragment extends Fragment {
         steps=(ArrayList<Step>)bundle.getSerializable("steps");
         stepDescriptionTextView=(TextView)rootView.findViewById(R.id.stepdescriptionTextView);
         simpleExoPlayerView = rootView.findViewById(R.id.simpleExoPlayer);
-
+imageView=(ImageView)rootView.findViewById(R.id.imageView);
         Next= (Button)rootView.findViewById(R.id.nextButton);
         Previous=(Button)rootView.findViewById(R.id.previousButton);
-        PreparVideo();
-        Buttons();
+
         checkOrientaion(rootView);
         return rootView;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        PreparVideo();
+        Buttons();
     }
 
     public StepFragment()
@@ -71,17 +84,25 @@ public class StepFragment extends Fragment {
     void PreparVideo()
     {
         simpleExoPlayerView.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
         if(!steps.get(position).getVideoURL().equals(""))
         {
             IntializePlayer(Uri.parse(steps.get(position).getVideoURL()));
+
         }
-        else if(!steps.get(position).getThumbnailURL().equals("")) {
-            IntializePlayer(Uri.parse(steps.get(position).getThumbnailURL()));
+        else{
+            simpleExoPlayerView.setVisibility(View.GONE);
+        }
+
+         if(!steps.get(position).getThumbnailURL().equals("")) {
+
+            Picasso.get().load(steps.get(position).getThumbnailURL()).into(imageView);
         }
         else {
-            simpleExoPlayerView.setVisibility(View.GONE);
-            stepDescriptionTextView.setText(steps.get(position).getDescription());
+
+           imageView.setVisibility(View.GONE);
         }
+        stepDescriptionTextView.setText(steps.get(position).getDescription());
 
     }
 
@@ -94,11 +115,14 @@ public class StepFragment extends Fragment {
         TrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
+        player=null;
         player = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
 
-
+        player.seekTo(playerPosition);
+        player.setPlayWhenReady(readyState);
 
         simpleExoPlayerView.setPlayer(player);
+
 
         DataSource.Factory dataSourceFactory =
                 new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getContext(), "BakingApp"));
@@ -108,16 +132,48 @@ public class StepFragment extends Fragment {
 
         MediaSource videoSource = new ExtractorMediaSource(uri,
                 dataSourceFactory, extractorsFactory, null, null);
-        player.prepare(videoSource);
-        player.setPlayWhenReady(true);
+        player.seekTo(playerPosition);
+        player.setPlayWhenReady(readyState);
+        player.prepare(videoSource,false,false);
+
+
         stepDescriptionTextView.setText(steps.get(position).getDescription());
 
     }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null) {
+      playerPosition=      savedInstanceState.getLong("playerposition");
+      readyState=savedInstanceState.getBoolean("state");
+        }
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putLong("playerposition", player.getCurrentPosition() );
+        outState.putBoolean("state",player.getPlayWhenReady());
+    }
     void Buttons( )
     {
         Next.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +230,13 @@ public class StepFragment extends Fragment {
 
     }
 
+    private void releasePlayer() {
+        if (player != null) {
+            player.stop();
+            player.release();
+
+        }
+    }
     void checkOrientaion(View view)
     {
         if (getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE&&GetDiagonalInches()<6.5)

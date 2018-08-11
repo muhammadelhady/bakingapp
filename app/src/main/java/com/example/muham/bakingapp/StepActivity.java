@@ -1,12 +1,16 @@
 package com.example.muham.bakingapp;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -46,7 +50,7 @@ int position;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
 
-        getSupportActionBar().hide();
+    //    getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 steps=(ArrayList<Step>)getIntent().getSerializableExtra("steps");
 position=getIntent().getIntExtra("position",0);
@@ -63,5 +67,18 @@ position=getIntent().getIntExtra("position",0);
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        finish();
+        return true;
+    }
 
 }

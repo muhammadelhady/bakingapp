@@ -13,7 +13,7 @@
         android:layout_weight="1"
         android:scaleType="fitXY"
 
-        app:srcCompat="@drawable/brownies" />
+        app:srcCompat="@drawable/backarrow" />
 
     <TextView
         android:id="@+id/recipeNameTextView"
