@@ -58,12 +58,12 @@ position=getIntent().getIntExtra("position",0);
         Bundle bundle = new Bundle();
         bundle.putSerializable("steps",steps);
         bundle.putInt("position",position);
-        StepFragment stepFragment =new StepFragment();
-        stepFragment.setArguments(bundle);
-        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.steps_container,stepFragment).commit();
-
-
+        if(savedInstanceState==null) {
+            StepFragment stepFragment = new StepFragment();
+            stepFragment.setArguments(bundle);
+            android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.steps_container, stepFragment).commit();
+        }
 
     }
 
